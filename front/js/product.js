@@ -34,5 +34,30 @@ fetch(`http://localhost:3000/api/products/${productId}`)
     .catch((error) => {
         alert("Une erreur s'est produite, veuillez nous excuser");
         console.log("fetch error in product.js", error);
-    })
+    });
 
+
+/*
+// Add a product to the cart
+
+const addProductToCartButton = document.getElementById("addToCart");
+addProductToCartButton.addEventListener("click", addProductToCart);
+
+function addProductToCart() {
+
+    const color = document.getElementById("colors").value
+    const quantity = document.getElementById("quantity").value
+
+    if(color !== "" && 0>quantity<101) {
+        const productToBuy = {
+            id: selectedProduct._id,
+            color: color,
+            quantity: Number(quantity),
+            name: selectedProduct.name
+        }
+    }
+
+
+
+}
+*/
