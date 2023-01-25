@@ -44,8 +44,9 @@ addProductToCartButton.addEventListener("click", addProductToCart)
 function addProductToCart() {
 
     const productId = new URLSearchParams(document.location.search).get("id");
-    const color = document.getElementById("colors").value
-    const quantity = document.getElementById("quantity").value
+    const color = document.getElementById("colors").value;
+    const quantity = document.getElementById("quantity").value;
+    
 
     if(color !== "" && 0<quantity && quantity<101) {
 
