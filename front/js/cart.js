@@ -1,6 +1,5 @@
 document.title = "Panier";
-const productInLocalStorage = JSON.parse(localStorage.getItem("cart"));
-
+let productInLocalStorage = JSON.parse(localStorage.getItem("cart"));
 
 if(productInLocalStorage) {
     for (let i=0; i < productInLocalStorage.length; i++) {
@@ -10,14 +9,95 @@ if(productInLocalStorage) {
         document.querySelector("#cart__items").appendChild(elementArticle);
         elementArticle.className = "cart__item";
         elementArticle.setAttribute("data-id", productInLocalStorage[i].productId);
-
+        
+        /*
         //Display image div
         let elementDivImg = document.createElement("div");
         elementArticle.appendChild(elementDivImg);
         elementDivImg.className = "cart__item__img";
 
         //Display image
-            
+        let elementImg = document.createElement("img");
+        elementDivImg.appendChild(elementImg);
+        elementImg.src = productInLocalStorage[i].img;
+        elementImg.alt = productInLocalStorage[i].altImg;
+        */
+
+        //Display div content
+        let elementItemContent = document.createElement("div");
+        elementArticle.appendChild(elementItemContent);
+        elementItemContent.className = "cart__item__content";
+
+        //Display div
+        let elementItemContentTitlePrice = document.createElement("div");
+        elementItemContent.appendChild(elementItemContentTitlePrice);
+        elementItemContentTitlePrice.className = "cart__item__content__titlePrice";
+
+        //Display h2
+        let elementTitle = document.createElement("h2");
+        elementItemContentTitlePrice.appendChild(elementTitle);
+        elementTitle.textContent = productInLocalStorage[i].name;
+
+        //Display color
+        let elementColor = document.createElement("p");
+        elementTitle.appendChild(elementColor);
+        elementColor.textContent = productInLocalStorage[i].color;
+
+        //Display price
+        let elementPrice = document.createElement("p");
+        elementItemContentTitlePrice.appendChild(elementPrice);
+        elementPrice.textContent = productInLocalStorage[i].price + " €";
+
+        //Display div content
+        let elementItemContentSettings = document.createElement("div");
+        elementItemContent.appendChild(elementItemContentSettings);
+        elementItemContentSettings.className = "cart__item__content__settings";
+
+        //Display div
+        let elementItemContentSettingsQuantity = document.createElement("div");
+        elementItemContentSettings.appendChild(elementItemContentSettingsQuantity);
+        elementItemContentSettingsQuantity.className = "cart__item__content__settings__quantity";
+
+        //Display quantity
+        let elementQuantity = document.createElement("p");
+        elementItemContentSettingsQuantity.appendChild(elementQuantity);
+        elementQuantity.textContent = "Quantité : ";
+
+        //Display total quantity
+        let elementTotalQuantity = document.createElement("input");
+        elementItemContentSettingsQuantity.appendChild(elementTotalQuantity);
+        elementTotalQuantity.value = productInLocalStorage[i].quantity;
+        elementTotalQuantity.className = "itemQuantity";
+        elementTotalQuantity.setAttribute("type", "number");
+        elementTotalQuantity.setAttribute("min", "1");
+        elementTotalQuantity.setAttribute("max", "100");
+        elementTotalQuantity.setAttribute("name", "itemQuantity");
+
+        //Display div delete
+        let elementItemContentSettingsDelete = document.createElement("div");
+        elementItemContentSettings.appendChild(elementItemContentSettingsDelete);
+        elementItemContentSettingsDelete.className = "cart__item__content__settings__delete";
+
+        //Display delete 
+        let elementDelete = document.createElement("p");
+        elementItemContentSettingsDelete.appendChild(elementDelete);
+        elementDelete.className = "deleteItem";
+        elementDelete.textContent = "Supprimer";
+        //Add event on click
+        elementDelete.addEventListener("click", (element) => {
+            element.preventDefault;
+            let deleteId = productInLocalStorage[i].id;
+            let deleteColor = productInLocalStorage[i].color;
+
+            productInLocalStorage = productInLocalStorage.filter(element => element.id !== deleteId || element.color !== deleteColor);
+            saveCart(productInLocalStorage);
+            alert('Article supprimé');
+
+            if(productInLocalStorage.length === 0) {
+                localStorage.clear();
+            }
+            location.reload();
+        });
     }
     
 

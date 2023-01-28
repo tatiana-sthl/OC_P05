@@ -25,7 +25,7 @@ fetch(`http://localhost:3000/api/products/${productId}`)
         for (let i=0; i<selectedProduct.colors.length; i++) {
             const productColors = document.createElement("option");
             productColors.setAttribute("value", selectedProduct.colors[i]);
-            productColors.innerHTML = selectedProduct.colors[i];
+            productColors.textContent = selectedProduct.colors[i];
             document.getElementById("colors").appendChild(productColors);
         }
     })
@@ -41,12 +41,12 @@ fetch(`http://localhost:3000/api/products/${productId}`)
 const addProductToCartButton = document.getElementById("addToCart");
 addProductToCartButton.addEventListener("click", addProductToCart)
 
+
 function addProductToCart() {
 
     const productId = new URLSearchParams(document.location.search).get("id");
     const color = document.getElementById("colors").value;
-    const quantity = document.getElementById("quantity").value;
-    
+    const quantity = document.getElementById("quantity").value;    
 
     if(color !== "" && 0<quantity && quantity<101) {
 
@@ -64,6 +64,7 @@ function addProductToCart() {
                 color: color,
                 quantity: Number(quantity),
                 name : document.getElementById("title").textContent,
+                price : document.getElementById("price").textContent,
             }
 
             cart.push(productToBuy);
