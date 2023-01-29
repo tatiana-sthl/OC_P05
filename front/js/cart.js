@@ -1,6 +1,8 @@
 document.title = "Panier";
 let productInLocalStorage = JSON.parse(localStorage.getItem("cart"));
 
+//Display elements in local storage
+
 if(productInLocalStorage) {
     for (let i=0; i < productInLocalStorage.length; i++) {
 
@@ -86,8 +88,8 @@ if(productInLocalStorage) {
         //Add event on click
         elementDelete.addEventListener("click", (element) => {
             element.preventDefault;
-            let deleteId = productInLocalStorage[i].id;
-            let deleteColor = productInLocalStorage[i].color;
+            const deleteId = productInLocalStorage[i].id;
+            const deleteColor = productInLocalStorage[i].color;
 
             productInLocalStorage = productInLocalStorage.filter(element => element.id !== deleteId || element.color !== deleteColor);
             saveCart(productInLocalStorage);
@@ -100,8 +102,28 @@ if(productInLocalStorage) {
         });
     }
     
-
 } else {
     document.querySelector("h1").textContent = "Le panier est vide";
     document.querySelector(".cart").style.display = "none";
 }
+
+//Display total quantity and price of elements in cart
+
+function totalCart() {
+    // Déclaration des variables de "Total" en tant que Number
+    let totalProducts = 0
+    let totalPrice = 0
+    // Déclaration + Pointage de tous les éléments ".cart__item"
+    const products = document.querySelectorAll(".cart__item")
+    // Boucle : pour chaque élément "purchase" des products
+    products.forEach((product) => {
+        // Récupération des quantités des produits via les dataset
+        totalProducts += JSON.parse(product.dataset.quantity)
+        // Calcul de prix panier total via les dataset
+        totalPrice += product.dataset.quantity * product.dataset.price
+    });
+    // Affichage des résultats dans le HTML
+    document.getElementById("totalQuantity").textContent = totalProducts
+    document.getElementById("totalPrice").textContent = totalPrice
+}
+totalCart();
