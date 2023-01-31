@@ -1,129 +1,142 @@
 document.title = "Panier";
-let productInLocalStorage = JSON.parse(localStorage.getItem("cart"));
 
-//Display elements in local storage
+let cart = getCart();
+let totalCartPrice = 0;
+let totalPrice = document.getElementById("totalPrice");
+let totalProductQuantity = document.getElementById("totalQuantity");
+const cartList = document.getElementById("cart__items");
+const totalDisplay = document.querySelector(".cart__price p");
+const carteHeading = document.querySelector('h1');
+const orderForm = document.querySelector(".cart__order");
 
-if(productInLocalStorage) {
-    for (let i=0; i < productInLocalStorage.length; i++) {
+for(let product of cart) {
+    let productId = product.id;
+    let productColor = product.color;
+    let productName = product.name;
+    let productQuantity = product.quantity;
+
+    fetch(`http://localhost:3000/api/products/${productId}`)
+
+    .then((response) => response.json())
+
+    .then((productDetails) => {
 
         //Display article
         let elementArticle = document.createElement("article");
-        document.querySelector("#cart__items").appendChild(elementArticle);
         elementArticle.className = "cart__item";
-        elementArticle.setAttribute("data-id", productInLocalStorage[i].productId);
-        
-        /*
+        elementArticle.setAttribute("data-id", productId);
+        elementArticle.setAttribute("data-color", productColor);
+
+        cartList.appendChild(elementArticle);
+
         //Display image div
         let elementDivImg = document.createElement("div");
-        elementArticle.appendChild(elementDivImg);
         elementDivImg.className = "cart__item__img";
+        elementArticle.appendChild(elementDivImg);
 
         //Display image
         let elementImg = document.createElement("img");
+        elementImg.src = productDetails.imageUrl;
+        elementImg.alt = productDetails.altTxt;
         elementDivImg.appendChild(elementImg);
-        elementImg.src = productInLocalStorage[i].img;
-        elementImg.alt = productInLocalStorage[i].altImg;
-        */
 
         //Display div content
         let elementItemContent = document.createElement("div");
-        elementArticle.appendChild(elementItemContent);
         elementItemContent.className = "cart__item__content";
-
-        //Display div
+        elementArticle.appendChild(elementItemContent);
+    
+         //Display div
         let elementItemContentTitlePrice = document.createElement("div");
-        elementItemContent.appendChild(elementItemContentTitlePrice);
         elementItemContentTitlePrice.className = "cart__item__content__titlePrice";
+        elementItemContent.appendChild(elementItemContentTitlePrice);
+        
+         //Display h2
+         let elementTitle = document.createElement("h2");       
+         elementTitle.textContent = productName;
+         elementItemContentTitlePrice.appendChild(elementTitle);
+ 
+         //Display color
+         let elementColor = document.createElement("p");
+         elementColor.textContent = productColor;
+         elementTitle.appendChild(elementColor);
+ 
+         //Display price
+         let elementPrice = document.createElement("p");
+         elementPrice.textContent = productDetails.price + "€";
+         elementItemContentTitlePrice.appendChild(elementPrice);
+ 
+         //Display div content
+         let elementItemContentSettings = document.createElement("div");        
+         elementItemContentSettings.className = "cart__item__content__settings";
+         elementItemContent.appendChild(elementItemContentSettings);
+ 
+         //Display div
+         let elementItemContentSettingsQuantity = document.createElement("div");
+         elementItemContentSettingsQuantity.className = "cart__item__content__settings__quantity";
+         elementItemContentSettings.appendChild(elementItemContentSettingsQuantity);
+ 
+         //Display quantity
+         let elementQuantity = document.createElement("p");
+         elementQuantity.textContent = "Quantité : ";
+         elementItemContentSettingsQuantity.appendChild(elementQuantity);
+ 
+         //Display total quantity
+         let elementTotalQuantity = document.createElement("input");
+         elementTotalQuantity.value = productQuantity;
+         elementTotalQuantity.className = "itemQuantity";
+         elementTotalQuantity.setAttribute("type", "number");
+         elementTotalQuantity.setAttribute("min", "1");
+         elementTotalQuantity.setAttribute("max", "100");
+         elementTotalQuantity.setAttribute("name", "itemQuantity");
+         elementItemContentSettingsQuantity.appendChild(elementTotalQuantity);
+      
 
-        //Display h2
-        let elementTitle = document.createElement("h2");
-        elementItemContentTitlePrice.appendChild(elementTitle);
-        elementTitle.textContent = productInLocalStorage[i].name;
-
-        //Display color
-        let elementColor = document.createElement("p");
-        elementTitle.appendChild(elementColor);
-        elementColor.textContent = productInLocalStorage[i].color;
-
-        //Display price
-        let elementPrice = document.createElement("p");
-        elementItemContentTitlePrice.appendChild(elementPrice);
-        elementPrice.textContent = productInLocalStorage[i].price + " €";
-
-        //Display div content
-        let elementItemContentSettings = document.createElement("div");
-        elementItemContent.appendChild(elementItemContentSettings);
-        elementItemContentSettings.className = "cart__item__content__settings";
-
-        //Display div
-        let elementItemContentSettingsQuantity = document.createElement("div");
-        elementItemContentSettings.appendChild(elementItemContentSettingsQuantity);
-        elementItemContentSettingsQuantity.className = "cart__item__content__settings__quantity";
-
-        //Display quantity
-        let elementQuantity = document.createElement("p");
-        elementItemContentSettingsQuantity.appendChild(elementQuantity);
-        elementQuantity.textContent = "Quantité : ";
-
-        //Display total quantity
-        let elementTotalQuantity = document.createElement("input");
-        elementItemContentSettingsQuantity.appendChild(elementTotalQuantity);
-        elementTotalQuantity.value = productInLocalStorage[i].quantity;
-        elementTotalQuantity.className = "itemQuantity";
-        elementTotalQuantity.setAttribute("type", "number");
-        elementTotalQuantity.setAttribute("min", "1");
-        elementTotalQuantity.setAttribute("max", "100");
-        elementTotalQuantity.setAttribute("name", "itemQuantity");
-
-        //Display div delete
+         //Display div delete
         let elementItemContentSettingsDelete = document.createElement("div");
-        elementItemContentSettings.appendChild(elementItemContentSettingsDelete);
         elementItemContentSettingsDelete.className = "cart__item__content__settings__delete";
+        elementItemContentSettings.appendChild(elementItemContentSettingsDelete);
 
+        //Display total price
+        totalPrice.textContent = getTotalCartPrice(productDetails, productQuantity);
+
+        //Display total quantity 
+        totalProductQuantity.textContent = getQuantityProduct();
+
+        let oldQuantity = Number(elementTotalQuantity.value);
+
+        elementTotalQuantity.addEventListener("change", () => {
+            productQuantity = modifyQuantity(product, Number(elementTotalQuantity.value));
+            totalProductQuantity.textContent = getQuantityProduct();
+            if(Number(elementTotalQuantity.value)>0 && Number(elementTotalQuantity.value)<= 100) {
+                totalPrice.textContent = modifyTotalPrice(productDetails, oldQuantity, Number(elementTotalQuantity.value));
+                oldQuantity = Number(elementTotalQuantity.value);
+            }
+        })
+        
         //Display delete 
         let elementDelete = document.createElement("p");
-        elementItemContentSettingsDelete.appendChild(elementDelete);
         elementDelete.className = "deleteItem";
         elementDelete.textContent = "Supprimer";
+        elementItemContentSettingsDelete.appendChild(elementDelete);
         //Add event on click
-        elementDelete.addEventListener("click", (element) => {
-            element.preventDefault;
-            const deleteId = productInLocalStorage[i].id;
-            const deleteColor = productInLocalStorage[i].color;
-
-            productInLocalStorage = productInLocalStorage.filter(element => element.id !== deleteId || element.color !== deleteColor);
-            saveCart(productInLocalStorage);
-            alert('Article supprimé');
-
-            if(productInLocalStorage.length === 0) {
-                localStorage.clear();
-            }
+        elementDelete.addEventListener("click", () => {
+            deleteProduct(product);
+            alert("Le produit a bien été supprimé");
             location.reload();
-        });
-    }
-    
-} else {
-    document.querySelector("h1").textContent = "Le panier est vide";
-    document.querySelector(".cart").style.display = "none";
+        });      
+        
+        
+    })
+
+    .catch((error) => {
+        alert("Une erreur s'est produite lors du chargement du panier, veuillez nous excuser" + error);
+        console.log("fetch error in cart.js", error);
+    })
 }
 
-//Display total quantity and price of elements in cart
-
-function totalCart() {
-    // Déclaration des variables de "Total" en tant que Number
-    let totalProducts = 0
-    let totalPrice = 0
-    // Déclaration + Pointage de tous les éléments ".cart__item"
-    const products = document.querySelectorAll(".cart__item")
-    // Boucle : pour chaque élément "purchase" des products
-    products.forEach((product) => {
-        // Récupération des quantités des produits via les dataset
-        totalProducts += JSON.parse(product.dataset.quantity)
-        // Calcul de prix panier total via les dataset
-        totalPrice += product.dataset.quantity * product.dataset.price
-    });
-    // Affichage des résultats dans le HTML
-    document.getElementById("totalQuantity").textContent = totalProducts
-    document.getElementById("totalPrice").textContent = totalPrice
+if(cart.length == 0) {
+    carteHeading.textContent = "Le panier est vide";
+    totalDisplay.innerHTML = '<a href="../html/index.html">Consulter notre catalogue</a>';
+    totalDisplay.style.textAlign = "center";
+    orderForm.style.display = "none";
 }
-totalCart();
