@@ -1,5 +1,7 @@
 document.title = "Panier";
 
+//Display and processing of cart products
+
 let cart = getCart();
 let totalCartPrice = 0;
 let totalPrice = document.getElementById("totalPrice");
@@ -50,48 +52,48 @@ for(let product of cart) {
         elementItemContentTitlePrice.className = "cart__item__content__titlePrice";
         elementItemContent.appendChild(elementItemContentTitlePrice);
         
-         //Display h2
-         let elementTitle = document.createElement("h2");       
-         elementTitle.textContent = productName;
-         elementItemContentTitlePrice.appendChild(elementTitle);
- 
-         //Display color
-         let elementColor = document.createElement("p");
-         elementColor.textContent = productColor;
-         elementTitle.appendChild(elementColor);
- 
-         //Display price
-         let elementPrice = document.createElement("p");
-         elementPrice.textContent = productDetails.price + "€";
-         elementItemContentTitlePrice.appendChild(elementPrice);
- 
-         //Display div content
-         let elementItemContentSettings = document.createElement("div");        
-         elementItemContentSettings.className = "cart__item__content__settings";
-         elementItemContent.appendChild(elementItemContentSettings);
- 
-         //Display div
-         let elementItemContentSettingsQuantity = document.createElement("div");
-         elementItemContentSettingsQuantity.className = "cart__item__content__settings__quantity";
-         elementItemContentSettings.appendChild(elementItemContentSettingsQuantity);
- 
-         //Display quantity
-         let elementQuantity = document.createElement("p");
-         elementQuantity.textContent = "Quantité : ";
-         elementItemContentSettingsQuantity.appendChild(elementQuantity);
- 
-         //Display total quantity
-         let elementTotalQuantity = document.createElement("input");
-         elementTotalQuantity.value = productQuantity;
-         elementTotalQuantity.className = "itemQuantity";
-         elementTotalQuantity.setAttribute("type", "number");
-         elementTotalQuantity.setAttribute("min", "1");
-         elementTotalQuantity.setAttribute("max", "100");
-         elementTotalQuantity.setAttribute("name", "itemQuantity");
-         elementItemContentSettingsQuantity.appendChild(elementTotalQuantity);
+        //Display h2
+        let elementTitle = document.createElement("h2");       
+        elementTitle.textContent = productName;
+        elementItemContentTitlePrice.appendChild(elementTitle);
+
+        //Display color
+        let elementColor = document.createElement("p");
+        elementColor.textContent = productColor;
+        elementTitle.appendChild(elementColor);
+
+        //Display price
+        let elementPrice = document.createElement("p");
+        elementPrice.textContent = productDetails.price + "€";
+        elementItemContentTitlePrice.appendChild(elementPrice);
+
+        //Display div content
+        let elementItemContentSettings = document.createElement("div");        
+        elementItemContentSettings.className = "cart__item__content__settings";
+        elementItemContent.appendChild(elementItemContentSettings);
+
+        //Display div
+        let elementItemContentSettingsQuantity = document.createElement("div");
+        elementItemContentSettingsQuantity.className = "cart__item__content__settings__quantity";
+        elementItemContentSettings.appendChild(elementItemContentSettingsQuantity);
+
+        //Display quantity
+        let elementQuantity = document.createElement("p");
+        elementQuantity.textContent = "Quantité : ";
+        elementItemContentSettingsQuantity.appendChild(elementQuantity);
+
+        //Display total quantity
+        let elementTotalQuantity = document.createElement("input");
+        elementTotalQuantity.value = productQuantity;
+        elementTotalQuantity.className = "itemQuantity";
+        elementTotalQuantity.setAttribute("type", "number");
+        elementTotalQuantity.setAttribute("min", "1");
+        elementTotalQuantity.setAttribute("max", "100");
+        elementTotalQuantity.setAttribute("name", "itemQuantity");
+        elementItemContentSettingsQuantity.appendChild(elementTotalQuantity);
       
 
-         //Display div delete
+        //Display div delete
         let elementItemContentSettingsDelete = document.createElement("div");
         elementItemContentSettingsDelete.className = "cart__item__content__settings__delete";
         elementItemContentSettings.appendChild(elementItemContentSettingsDelete);
@@ -136,7 +138,91 @@ for(let product of cart) {
 
 if(cart.length == 0) {
     carteHeading.textContent = "Le panier est vide";
-    totalDisplay.innerHTML = '<a href="../html/index.html">Consulter notre catalogue</a>';
+    totalDisplay.innerHTML = '<a href="../html/index.html">Retrouvez nos produits</a>';
     totalDisplay.style.textAlign = "center";
     orderForm.style.display = "none";
+}
+
+
+//Processing of the command form
+
+function getForm() {
+
+    let form = document.querySelector(".cart__order__form");
+
+    //Regex
+    let charRegex = new RegExp("^[a-zA-Z ,.'-]+$");
+    let addressRegex = new RegExp("^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");   
+    let mailRegex = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
+
+    //First name
+    form.firstName.addEventListener('change', function(inputFirstName) {
+        let firstNameError = inputFirstName.nextElementSibling;
+
+        if (charRegex.test(inputFirstName.value)) {
+            firstNameError.textContent = '';
+        } else {
+            firstNameError.textContent = 'Veuillez renseigner ce champ.';
+        }
+    });
+
+    //Last name
+    form.lastName.addEventListener('change', function(inputLastName) {
+        let lastNameError = inputLastName.nextElementSibling;
+
+        if (charRegex.test(inputLastName.value)) {
+            lastNameError.textContent = '';
+        } else {
+            lastNameError.textContent = 'Veuillez renseigner ce champ.';
+        }
+    });
+
+
+    //Address
+    form.address.addEventListener('change', function(inputAddress) {
+        let addressError = inputAddress.nextElementSibling;
+
+        if (addressRegex.test(inputAddress.value)) {
+            addressError.textContent = '';
+        } else {
+            addressError.textContent = 'Veuillez renseigner ce champ.';
+        }
+    });
+
+
+    //City
+    form.city.addEventListener('change', function(inputCity) {
+        let cityError = inputCity.nextElementSibling;
+
+        if (charRegex.test(inputCity.value)) {
+            cityError.textContent = '';
+        } else {
+            cityError.textContent = 'Veuillez renseigner ce champ.';
+        }
+    });
+
+
+    //Mail
+    form.mail.addEventListener('change', function(inputMail) {
+        let mailError = inputMail.nextElementSibling;
+
+        if (mailRegex.test(inputMail.value)) {
+            mailError.textContent = '';
+        } else {
+            mailError.textContent = 'Veuillez renseigner ce champ.';
+        }
+    });
+}
+getForm();
+
+
+function submitForm() {
+
+    const order = document.getElementById('order');
+
+    order.addEventListener('click', (e) => {
+        e.preventDefault();
+
+    })
+
 }

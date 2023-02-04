@@ -52,6 +52,7 @@ function modifyQuantity(product, quantity) {
     }
 }
 
+//Delete product
 function deleteProduct(product){
 
     let cart = getCart();
@@ -60,6 +61,7 @@ function deleteProduct(product){
     saveCart(cart);
 }
 
+//Modify the total price of all products
 function modifyTotalPrice(product, oldQuantity, newQuantity){
 
     if(newQuantity > oldQuantity) {
