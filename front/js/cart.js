@@ -125,9 +125,7 @@ for(let product of cart) {
             deleteProduct(product);
             alert("Le produit a bien été supprimé");
             location.reload();
-        });      
-        
-        
+        });              
     })
 
     .catch((error) => {
@@ -150,79 +148,120 @@ function getForm() {
 
     let form = document.querySelector(".cart__order__form");
 
-    //Regex
-    let charRegex = new RegExp("^[a-zA-Z ,.'-]+$");
-    let addressRegex = new RegExp("^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");   
-    let mailRegex = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
+    let charRegExp = new RegExp("^[a-zA-Z ,.'-]+$");
+    let addressRegExp = new RegExp("^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");
+    let mailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
 
-    //First name
-    form.firstName.addEventListener('change', function(inputFirstName) {
-        let firstNameError = inputFirstName.nextElementSibling;
-
-        if (charRegex.test(inputFirstName.value)) {
-            firstNameError.textContent = '';
-        } else {
-            firstNameError.textContent = 'Veuillez renseigner ce champ.';
-        }
+    form.firstName.addEventListener('change', function() {
+        firstName(this);
     });
 
-    //Last name
-    form.lastName.addEventListener('change', function(inputLastName) {
-        let lastNameError = inputLastName.nextElementSibling;
-
-        if (charRegex.test(inputLastName.value)) {
-            lastNameError.textContent = '';
-        } else {
-            lastNameError.textContent = 'Veuillez renseigner ce champ.';
-        }
+    form.lastName.addEventListener('change', function() {
+        lastName(this);
     });
 
-
-    //Address
-    form.address.addEventListener('change', function(inputAddress) {
-        let addressError = inputAddress.nextElementSibling;
-
-        if (addressRegex.test(inputAddress.value)) {
-            addressError.textContent = '';
-        } else {
-            addressError.textContent = 'Veuillez renseigner ce champ.';
-        }
+    form.address.addEventListener('change', function() {
+        address(this);
     });
 
-
-    //City
-    form.city.addEventListener('change', function(inputCity) {
-        let cityError = inputCity.nextElementSibling;
-
-        if (charRegex.test(inputCity.value)) {
-            cityError.textContent = '';
-        } else {
-            cityError.textContent = 'Veuillez renseigner ce champ.';
-        }
+    form.city.addEventListener('change', function() {
+        city(this);
     });
 
-
-    //Mail
-    form.mail.addEventListener('change', function(inputMail) {
-        let mailError = inputMail.nextElementSibling;
-
-        if (mailRegex.test(inputMail.value)) {
-            mailError.textContent = '';
-        } else {
-            mailError.textContent = 'Veuillez renseigner ce champ.';
-        }
+    form.email.addEventListener('change', function() {
+        mail(this);
     });
+
+    const firstName = function(inputFirstName) {
+        let firstNameErrorMsg = inputFirstName.nextElementSibling;
+
+        if (charRegExp.test(inputFirstName.value)) {
+            firstNameErrorMsg.textContent = '';
+        } else {
+            firstNameErrorMsg.textContent = 'Veuillez renseigner ce champ.';
+        }
+    };
+
+    const lastName = function(inputLastName) {
+        let lastNameErrorMsg = inputLastName.nextElementSibling;
+
+        if (charRegExp.test(inputLastName.value)) {
+            lastNameErrorMsg.textContent = '';
+        } else {
+            lastNameErrorMsg.textContent = 'Veuillez renseigner ce champ.';
+        }
+    };
+
+    const address = function(inputAddress) {
+        let addressErrorMsg = inputAddress.nextElementSibling;
+
+        if (addressRegExp.test(inputAddress.value)) {
+            addressErrorMsg.textContent = '';
+        } else {
+            addressErrorMsg.textContent = 'Veuillez renseigner ce champ.';
+        }
+    };
+
+    const city = function(inputCity) {
+        let cityErrorMsg = inputCity.nextElementSibling;
+
+        if (charRegExp.test(inputCity.value)) {
+            cityErrorMsg.textContent = '';
+        } else {
+            cityErrorMsg.textContent = 'Veuillez renseigner ce champ.';
+        }
+    };
+
+    const mail = function(inputMail) {
+        let mailErrorMsg = inputMail.nextElementSibling;
+
+        if (mailRegExp.test(inputMail.value)) {
+            mailErrorMsg.innerHTML = '';
+        } else {
+            mailErrorMsg.innerHTML = 'Veuillez renseigner votre email.';
+        }
+    };
 }
 getForm();
 
 
-function submitForm() {
-
+function postForm() {
     const order = document.getElementById('order');
+    order.addEventListener('click', (event) => {
+    event.preventDefault();
 
-    order.addEventListener('click', (e) => {
-        e.preventDefault();
+    const infoForm = {
+      firstName : document.getElementById('firstName').value,
+      lastName : document.getElementById('lastName').value,
+      address : document.getElementById('address').value,
+      city : document.getElementById('city').value,
+      email : document.getElementById('email').value
+    }
 
-    })
+    let infoProducts = [];
+    for (let i = 0; i<cart.length;i++) {
+        infoProducts.push(cart[i].id);
+    }
 
-}
+    const submitData = {
+        infoForm,
+        infoProducts,
+    }
+
+    const options = {
+        method : 'POST',
+        body : JSON.stringify(submitData),
+        headers : {
+            'Content-Type' : 'application/json',
+        }
+    };
+
+    fetch("http://localhost:3000/api/products/order", options)
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem('orderId', data.orderId);
+            document.location.href = 'confirmation.html?id=' + data.orderId;
+        });
+  });
+} 
+postForm();
