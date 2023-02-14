@@ -151,43 +151,35 @@ let addressRegExp = /^[a-z0-9éèôöîïûùü' -]{2,50}$/gi;
 let mailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
 
 //Listen input in form
+form.firstName.setAttribute("required", "required");
+
 form.firstName.addEventListener('change', function() {
-    if(firstNameValid(this.value)){
-        
-    } else {
-        this.nextElementSibling.textContent = "Veuillez remplir ce champ";
+    if(!firstNameValid(this.value)){
+        this.nextElementSibling.textContent = "Le champ n'est pas valide";
     }
 });
 
 form.lastName.addEventListener('change', function() {
-    if(lastNameValid(this.value)){
-        
-    } else {
-        this.nextElementSibling.textContent = "Veuillez remplir ce champ";
-    }
+    if(!lastNameValid(this.value)){
+        this.nextElementSibling.textContent = "Le champ n'est pas valide";
+    } 
 });
 
 form.address.addEventListener('change', function() {
-    if(addressValid(this.value)){
-        
-    } else {
-        this.nextElementSibling.textContent = "Veuillez remplir ce champ";
+    if(!addressValid(this.value)){
+        this.nextElementSibling.textContent = "Le champ n'est pas valide";
     }
 });
 
 form.city.addEventListener('change', function() {
-    if(cityValid(this.value)){
-        
-    } else {
-        this.nextElementSibling.textContent = "Veuillez remplir ce champ";
+    if(!cityValid(this.value)){
+        this.nextElementSibling.textContent = "Le champ n'est pas valide";
     }
 });
 
 form.email.addEventListener('change', function() {
-    if(mailValid(this.value)){
-        
-    } else {
-        this.nextElementSibling.textContent = "Format d'email invalide";
+    if(!mailValid(this.value)){
+        this.nextElementSibling.textContent = "Format d'email invalide";       
     }
 });
 
@@ -232,6 +224,37 @@ function mailValid(mail){
     }
 }
 
+function validateForm(firstName, lastName, address, city, mail) {
+    let result = true;
+
+    if(!firstName) {
+        document.getElementById("firstNameErrorMsg").textContent = "Veuillez renseigner ce champ";
+        result = false;
+    }
+
+    if(!lastName) {
+        document.getElementById("lastNameErrorMsg").textContent = "Veuillez renseigner ce champ";
+        result = false;
+    }
+
+    if(!address) {
+        document.getElementById("addressErrorMsg").textContent = "Veuillez renseigner ce champ";
+        result = false;
+    }
+
+    if(!city) {
+        document.getElementById("cityErrorMsg").textContent = "Veuillez renseigner ce champ";
+        result = false;
+    }
+
+    if(!mail) {
+        document.getElementById("emailErrorMsg").textContent = "Veuillez renseigner ce champ";
+        result = false;
+    }
+
+    return result;
+}
+
 function postForm() {
     //defines a variable with all the variables present in the form
     const contact = {
@@ -265,7 +288,7 @@ function postForm() {
         }
     };
 
-    if(mailValid(contact.email)==true && products.length>=1){
+    if(mailValid(contact.email) && firstNameValid(contact.firstName) && lastNameValid(contact.lastName) && addressValid(contact.address) && cityValid(contact.city) && products.length>=1){
         fetch("http://localhost:3000/api/products/order", options)
         .then(response => response.json())
         .then(data => {
@@ -279,6 +302,8 @@ function postForm() {
         .catch((error) => {
             alert("Une erreur s'est produite lors de l'envoi du formulaire à l'API, veuillez nous excuser" + error);
         })
+    } else {
+        alert("Verifier si tous les champs ont été renseignés et sont valides")
     }
    
   }
@@ -286,6 +311,9 @@ function postForm() {
 const order = document.getElementById('order');
 
 order.addEventListener('click', (event) => {
+    let valid = validateForm(document.getElementById('firstName').value, document.getElementById('lastName').value, document.getElementById('address').value, document.getElementById('email').value);
+    if(valid) {
+        postForm();
+    }
     event.preventDefault();
-    postForm();
 })
