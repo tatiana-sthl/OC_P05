@@ -148,11 +148,9 @@ let form = document.querySelector(".cart__order__form");
 
 let charRegExp = new RegExp("^[a-zA-Z ,.'-]+$");
 let addressRegExp = /^[a-z0-9éèôöîïûùü' -]{2,50}$/gi;
-let mailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
+let emailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
 
 //Listen input in form
-form.firstName.setAttribute("required", "required");
-
 form.firstName.addEventListener('change', function() {
     if(!firstNameValid(this.value)){
         this.nextElementSibling.textContent = "Le champ n'est pas valide";
@@ -178,7 +176,7 @@ form.city.addEventListener('change', function() {
 });
 
 form.email.addEventListener('change', function() {
-    if(!mailValid(this.value)){
+    if(!emailValid(this.value)){
         this.nextElementSibling.textContent = "Format d'email invalide";       
     }
 });
@@ -216,15 +214,15 @@ function cityValid(city){
     }
 }
 
-function mailValid(mail){
-    if(mailRegExp.test(mail)) {
+function emailValid(email){
+    if(emailRegExp.test(email)) {
         return true
     } else {
         return false
     }
 }
 
-function validateForm(firstName, lastName, address, city, mail) {
+function validateForm(firstName, lastName, address, city, email) {
     let result = true;
 
     if(!firstName) {
@@ -247,7 +245,7 @@ function validateForm(firstName, lastName, address, city, mail) {
         result = false;
     }
 
-    if(!mail) {
+    if(!email) {
         document.getElementById("emailErrorMsg").textContent = "Veuillez renseigner ce champ";
         result = false;
     }
@@ -288,7 +286,7 @@ function postForm() {
         }
     };
 
-    if(mailValid(contact.email) && firstNameValid(contact.firstName) && lastNameValid(contact.lastName) && addressValid(contact.address) && cityValid(contact.city) && products.length>=1){
+    if(emailValid(contact.email) && firstNameValid(contact.firstName) && lastNameValid(contact.lastName) && addressValid(contact.address) && cityValid(contact.city) && products.length>=1){
         fetch("http://localhost:3000/api/products/order", options)
         .then(response => response.json())
         .then(data => {
@@ -302,16 +300,14 @@ function postForm() {
         .catch((error) => {
             alert("Une erreur s'est produite lors de l'envoi du formulaire à l'API, veuillez nous excuser" + error);
         })
-    } else {
-        alert("Verifier si tous les champs ont été renseignés et sont valides")
     }
-   
-  }
+}
 
 const order = document.getElementById('order');
 
 order.addEventListener('click', (event) => {
-    let valid = validateForm(document.getElementById('firstName').value, document.getElementById('lastName').value, document.getElementById('address').value, document.getElementById('email').value);
+    let valid = validateForm(document.getElementById('firstName').value, document.getElementById('lastName').value, document.getElementById('address').value, document.getElementById('city').value, document.getElementById('email').value);
+    //console.log(valid);
     if(valid) {
         postForm();
     }
