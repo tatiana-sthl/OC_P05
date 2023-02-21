@@ -147,37 +147,47 @@ if(cart.length == 0) {
 let form = document.querySelector(".cart__order__form");
 
 let charRegExp = new RegExp("^[a-zA-Z ,.'-]+$");
-let addressRegExp = /^[a-z0-9éèôöîïûùü' -]{2,50}$/gi;
+let addressRegExp = new RegExp("^[A-zÀ-ú0-9 ,.'\-]+$");
 let emailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
 
 //Listen input in form
 form.firstName.addEventListener('change', function() {
     if(!firstNameValid(this.value)){
         this.nextElementSibling.textContent = "Le champ n'est pas valide";
+    } else {
+        this.nextElementSibling.textContent = "";
     }
 });
 
 form.lastName.addEventListener('change', function() {
     if(!lastNameValid(this.value)){
         this.nextElementSibling.textContent = "Le champ n'est pas valide";
-    } 
+    } else {
+        this.nextElementSibling.textContent = "";
+    }
 });
 
 form.address.addEventListener('change', function() {
     if(!addressValid(this.value)){
         this.nextElementSibling.textContent = "Le champ n'est pas valide";
+    } else {
+        this.nextElementSibling.textContent = "";
     }
 });
 
 form.city.addEventListener('change', function() {
     if(!cityValid(this.value)){
         this.nextElementSibling.textContent = "Le champ n'est pas valide";
+    } else {
+        this.nextElementSibling.textContent = "";
     }
 });
 
 form.email.addEventListener('change', function() {
     if(!emailValid(this.value)){
         this.nextElementSibling.textContent = "Format d'email invalide";       
+    } else {
+        this.nextElementSibling.textContent = "";
     }
 });
 
@@ -253,16 +263,8 @@ function validateForm(firstName, lastName, address, city, email) {
     return result;
 }
 
-function postForm() {
-    //defines a variable with all the variables present in the form
-    const contact = {
-      firstName : document.getElementById('firstName').value,
-      lastName : document.getElementById('lastName').value,
-      address : document.getElementById('address').value,
-      city : document.getElementById('city').value,
-      email : document.getElementById('email').value
-    }
-
+function postForm(contact) {
+    
     //define an empty array
     let products = [];
     //for loop which allows to loop on all the products present in the cart
@@ -285,9 +287,8 @@ function postForm() {
             'Accept' : 'application/json',
         }
     };
-
-    if(emailValid(contact.email) && firstNameValid(contact.firstName) && lastNameValid(contact.lastName) && addressValid(contact.address) && cityValid(contact.city) && products.length>=1){
-        fetch("http://localhost:3000/api/products/order", options)
+    
+    fetch("http://localhost:3000/api/products/order", options)
         .then(response => response.json())
         .then(data => {
             if(data.orderId) {
@@ -300,16 +301,28 @@ function postForm() {
         .catch((error) => {
             alert("Une erreur s'est produite lors de l'envoi du formulaire à l'API, veuillez nous excuser" + error);
         })
-    }
 }
 
-const order = document.getElementById('order');
+let order = document.querySelector(".cart__order__form");
 
-order.addEventListener('click', (event) => {
-    let valid = validateForm(document.getElementById('firstName').value, document.getElementById('lastName').value, document.getElementById('address').value, document.getElementById('city').value, document.getElementById('email').value);
-    //console.log(valid);
-    if(valid) {
-        postForm();
-    }
+order.addEventListener('submit', (event) => {
     event.preventDefault();
+
+    //defines a variable with all the variables present in the form
+    const contact = {
+        firstName : document.getElementById('firstName').value,
+        lastName : document.getElementById('lastName').value,
+        address : document.getElementById('address').value,
+        city : document.getElementById('city').value,
+        email : document.getElementById('email').value
+    }
+
+    let valid = validateForm(contact.firstName, contact.lastName, contact.address, contact.city, contact.email);
+    
+    if(emailValid(contact.email) && firstNameValid(contact.firstName) && lastNameValid(contact.lastName) && addressValid(contact.address) && cityValid(contact.city) && valid && cart.length>=1) {
+        postForm(contact);
+    } else {
+        event.preventDefault();
+        alert("Vérifiez si tous les champs ont été remplis et sont valides");
+    }    
 })
