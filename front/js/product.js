@@ -48,24 +48,29 @@ function addProductToCart() {
     const color = document.getElementById("colors").value;
     const quantity = document.getElementById("quantity").value;
 
+    // if the color is defined and the number is between 1 and 100
     if(color !== "" && 0<quantity && quantity<101) {
 
+        // call the function
         const cart = getCart();
+        // return the product id and color
         const resultProduct = cart.find((element) => element.id === productId && element.color === color);
 
+        // if the product is defined
         if(resultProduct != undefined) {
-
+            // add the quantity
             resultProduct.quantity += Number(quantity);  
 
+        //if the product is not defined
         } else {
-            
+            //defined a product with its id, color, quantity and name
             const productToBuy = {
                 id: productId,
                 color: color,
                 quantity: Number(quantity),
                 name : document.getElementById("title").textContent,
             }
-
+            //add to the cart the product and return the new array
             cart.push(productToBuy);
          
         }

@@ -5,6 +5,7 @@ fetch("http://localhost:3000/api/products")
     .then((response) => response.json())
 
     .then((product) => {
+
         for(let i=0; i<product.length; i++) {
 
             let productAnchor = document.createElement("a");
